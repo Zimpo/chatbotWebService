@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta char="utf-8"/>
+    <title>Chatbot</title>
+    <link rel="stylesheet" href="index.css">
+  </head>
+
+  <body>
+    <div class="centrer">
+      <h1>Meet Lisa</h1>
+      <h2>She talks well about visa</h2>
+
+      <form action="/" method="post" id="form_msg">
+        <input type="text" id="message_box" placeholder="enter your message..."/>
+        <input type="submit" id="send" value="Send"/>
+      </form>
+
+      <section id=chat_zone>
+
+      </section>
+
+    </div>
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      var socket = io.connect('http://192.168.43.16:3000');
+
+      var pseudo = prompt("what's you name bro");
+      socket.emit('new_user', pseudo);
+     
+      socket.on('new_user', function(pseudo)
+      {
+        insertNewUser(pseudo.content);
+        return false;
+      });
+
+      socket.on('new_msg', function(message)
+      {
+        insertMessage(message.user, message.content);
+      });
+
+      $('#form_msg').submit(function()
+      {
+        var message = $('#message_box').val();
+        socket.emit('new_msg', message);
+        insertMessage(pseudo, message);
+        return false;
+      });
+   
+    function insertMessage(pseudo, message)
+    {
+      $('#chat_zone').prepend('<p><strong>' + pseudo + '</strong>' 
+      + ' : ' + message + '</p>');
+    }
+    
+    function insertNewUser(pseudo, message)
+    {
+      $('#chat_zone').prepend('<p><i>' + pseudo + 
+      ' has joined the chat</i></p>');
+    }
+
+    </script>
+  </body>
+
+</html>
